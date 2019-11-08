@@ -162,10 +162,12 @@ def main():
     acc = 0
     for j in range(group_num)
         # dont want to do this until it actually starts working...
+	# for cross validation
         if j == 1:
             break
         print('test set is: {} out of {}'.format(j, group_num))
     	model = Model()
+	# create train/test sets by excluding the current test set
         if j == 0 or j == group_num -1:
             if j == 0:
                 train_inputs = inputs[group_size * (j+1):]
