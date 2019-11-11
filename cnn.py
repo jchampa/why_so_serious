@@ -160,7 +160,7 @@ def main():
     group_num = 10
     group_size = len(inputs) // group_num
     acc = 0
-    for j in range(group_num)
+    for j in range(group_num):
         # dont want to do this until it actually starts working...
 	# for cross validation
         if j == 1:
