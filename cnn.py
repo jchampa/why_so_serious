@@ -5,6 +5,8 @@ import os
 import tensorflow as tf
 import numpy as np
 import random
+from sklearn.model_selection import KFold
+
 
 class Model(tf.keras.Model):
 	def __init__(self):
@@ -16,28 +18,34 @@ class Model(tf.keras.Model):
 		"""
 		super(Model, self).__init__()
 
+		# TODO: Initialize all hyperparameters
 		self.batch_size = 64
 		self.num_classes = 7
-        self.epochs = 10
-		# TODO: Initialize all hyperparameters
+		self.epochs = 10
+		self.num_folds = ???
 		self.epsilon = .001
-		self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+		self.learning_rate = .001
+		self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
+
+
 		# TODO: Initialize all trainable parameters
+
+		#filters and filter biases
 		self.filter1 = tf.Variable(tf.random.truncated_normal([5,5,3,16], stddev=0.1))
 		self.fb1 = tf.Variable(tf.random.truncated_normal([16], stddev=0.1))
+
 		self.filter2 = tf.Variable(tf.random.truncated_normal([5,5,16,20], stddev=0.1))
 		self.fb2 = tf.Variable(tf.random.truncated_normal([20], stddev=0.1))
+
 		self.filter3 = tf.Variable(tf.random.truncated_normal([5,5,20,20], stddev=0.1))
 		self.fb3 = tf.Variable(tf.random.truncated_normal([20], stddev=0.1))
 
-		self.dw1 = tf.Variable(tf.random.truncated_normal(shape=[4 * 4 * 20,64],stddev=0.1),dtype=tf.float32)
-		self.dw2 = tf.Variable(tf.random.truncated_normal(shape=[64,32],stddev=0.1),dtype=tf.float32)
-		self.dw3 = tf.Variable(tf.random.truncated_normal(shape=[32,self.num_classes],stddev=0.1),dtype=tf.float32)
-
-		self.db1 = tf.Variable(tf.random.truncated_normal(shape=[64],stddev=0.1),dtype=tf.float32)
-		self.db2 = tf.Variable(tf.random.truncated_normal(shape=[32],stddev=0.1),dtype=tf.float32)
-		self.db3 = tf.Variable(tf.random.truncated_normal(shape=[1, self.num_classes],stddev=0.1),dtype=tf.float32)
-
+		#Dense layers
+		self.dense1 = tf.keras.layers.Dense(64, activation='relu')
+		self.dropout1 = keras.layers.Dropout(rate=.3, noise_shape=None, seed=None)
+		self.dense2 = tf.keras.layers.Dense(64, activation='relu')
+		self.dropout2 = keras.layers.Dropout(rate=.3, noise_shape=None, seed=None)
+		self.dense3 = tf.keras.layers.Dense(self.num_classes, activation='softmax')
 
 	def call(self, inputs):
 		"""
@@ -46,35 +54,55 @@ class Model(tf.keras.Model):
 		:param is_testing: a boolean that should be set to True only when you're doing Part 2 of the assignment and this function is being called during testing
 		:return: logits - a matrix of shape (num_inputs, num_classes); during training, it would be (batch_size, 2)
 		"""
-		# Remember that
-		# shape of input = (num_inputs (or batch_size), in_height, in_width, in_channels)
-		# shape of filter = (filter_height, filter_width, in_channels, out_channels)
-		# shape of strides = (batch_stride, height_stride, width_stride, channels_stride)
-		#convolution 1
-		conv = tf.nn.conv2d(inputs, self.filter1, [1, 2,2 ,1], "SAME")
-		conv_with_bias = tf.nn.bias_add(conv, self.fb1)
-		batch_mean_1, batch_var_1 = tf.nn.moments(conv_with_bias, [0, 1, 2])
-		batch_norm_1 = tf.nn.relu(tf.nn.batch_normalization(conv_with_bias,batch_mean_1,batch_var_1,None,None,self.epsilon))
-		pooled_conv_1 = tf.nn.max_pool(batch_norm_1,[3,3], [1, 2, 2, 1],"SAME")
-		#convolution 2
-		conv2 = tf.nn.conv2d(pooled_conv_1, self.filter2, [1, 1,1 ,1], "SAME")
-		conv2_with_bias = tf.nn.bias_add(conv2, self.fb2)
-		batch_mean_2, batch_var_2 = tf.nn.moments(conv2_with_bias, [0, 1, 2])
-		batch_norm_2 = tf.nn.relu(tf.nn.batch_normalization(conv2_with_bias,batch_mean_2,batch_var_2,None,None,self.epsilon))
-		pooled_conv_2 = tf.nn.max_pool(batch_norm_2,[2,2], [1, 2, 2, 1],"SAME")
+		
+		num_inputs = np.shape(inputs)[0]
 
-		#convolution 3
+		stride2 = [1, 2, 2, 1]
+		stride1 = [1, 1, 1, 1]
 
-		conv3 = tf.nn.conv2d(pooled_conv_2, self.filter3, [1, 1,1 ,1], "SAME")
-		conv3_with_bias = tf.nn.bias_add(conv3, self.fb3)
-		batch_mean_3, batch_var_3 = tf.nn.moments(conv3_with_bias, [0, 1, 2])
-		batch_norm_3 = tf.nn.relu(tf.nn.batch_normalization(conv3_with_bias,batch_mean_3,batch_var_3,None,None,self.epsilon))
-		flattened = tf.reshape(batch_norm_3, [-1, 320])
-		#dense layers
-		layer1Output = tf.nn.dropout(tf.nn.relu(tf.matmul(flattened, self.dw1) + self.db1), .3) # remember to use a relu activation
-		layer2Output = tf.nn.dropout(tf.nn.relu(tf.matmul(layer1Output, self.dw2) + self.db2), .3)
-		logits = tf.matmul(layer2Output, self.dw3) + self.db3
+		# Convolution Layer 1
+		conv1 = tf.nn.conv2d(inputs, self.filter1, stride2, padding="SAME")
+		conv1 = tf.nn.bias_add(conv1, self.fb1)
+		# Batch Normalization 1
+		mean, variance = tf.nn.moments(conv1, [0, 1, 2])
+		batch1 = tf.nn.batch_normalization(conv1, mean, variance, None, None, self.epsilon)
+		# ReLU Nonlinearlity 1 
+		relu1 = tf.nn.relu(batch1)
+		# Max Pooling 1
+		pool1 = tf.nn.max_pool(relu1, ksize=[1, 3, 3, 1], strides=stride2, padding="SAME")
+		
+		# Convolution Layer 2
+		conv2 = tf.nn.conv2d(pool1, filters=self.filter2, strides=stride1, padding="SAME")
+		conv2 = tf.nn.bias_add(conv2, self.fb2)
+		# Batch Normalization 2
+		mean, variance = tf.nn.moments(conv2, [0, 1, 2])
+		batch2 = tf.nn.batch_normalization(conv2, mean, variance, None, None, self.epsilon)
+		# ReLU Nonlinearlity 2
+		relu2 = tf.nn.relu(batch2)
+		# Max Pooling 2
+		pool2 = tf.nn.max_pool(relu2, ksize=[1, 2, 2, 1], strides=stride2, padding="SAME")
+		
+		# Convolution Layer 3
+		conv3 = tf.nn.conv2d(pool2, filters=self.filter3, strides=stride1, padding="SAME")
+		conv3 = tf.nn.bias_add(conv3, self.fb3)
+		# Batch Normalization 3
+		mean, variance = tf.nn.moments(conv3, [0, 1, 2])
+		batch3 = tf.nn.batch_normalization(conv3, mean, variance, None, None, self.epsilon)
+		# ReLU Nonlinearlity 3
+		relu3 = tf.nn.relu(batch3)
+		#reshape
+		shape = tf.shape(relu3)
+		relu3 = tf.reshape(relu3, [num_inputs, shape[1]*shape[2]*shape[3]])
 
+		# Dense Layer 1
+		d1 = dense1(relu3)
+		d1 = dropout1(d1)
+		# Dense Layer 2
+		d2 = dense2(d1)
+		d2 = dropout2(d2)
+		# Dense Layer 3
+		logits = dense3(d2)
+		
 		return logits
 
 	def loss(self, logits, labels):
@@ -116,25 +144,24 @@ def train(model, train_inputs, train_labels):
 	:return: None
 	'''
 
-
-	# Instantiate our model
+	optimizer = model.optimizer
+	#shuffle inputs
 	indices = tf.random.shuffle(tf.range(len(train_inputs)))
 	train_input = tf.gather(train_inputs, indices)
 	train_label = tf.gather(train_labels, indices)
 
-	# Choosing our optimizer
-	optimizer = model.optimizer #tf.keras.optimizers.Adam(learning_rate=0.001)
+
 	for i in range(int(math.floor(len(train_input)/model.batch_size))):
 
-		input = tf.image.random_flip_left_right(train_input[i*model.batch_size:i * model.batch_size + model.batch_size])
+		tf.image.random_flip_left_right(train_input[i*model.batch_size:i * model.batch_size + model.batch_size])
 		label = train_label[i*model.batch_size:i * model.batch_size + model.batch_size]
-
-
 		with tf.GradientTape() as tape:
-			predictions = model.call(input)
+			logits = model.call(input)
 			loss = model.loss(predictions, label)
-			gradients = tape.gradient(loss, model.trainable_variables)
-		    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+			print('Batch Loss: ', loss)
+		gradients = tape.gradient(loss, model.trainable_variables)
+		optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+		print("Training Accuracy: ", model.accuracy(logits, labels))
 
 
 
