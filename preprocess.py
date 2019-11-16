@@ -32,13 +32,18 @@ def get_data(images_path, labels_path):
 				if key in data_dictionary:
 					data_dictionary[key].append(label)
 
-	data_dictionary_clean = {}
+	inputs = []
+	labels = []
 
 	# Remove images and labels with no label.
 	for key in data_dictionary:
 		if key != '' and len(data_dictionary[key]) == 2:
-			data_dictionary_clean[key] = data_dictionary[key]
+			current_input = data_dictionary[key][0]
+			current_label = data_dictionary[key][1]
+			inputs.append(current_input)
+			labels.append(current_label)
 
-	return data_dictionary_clean
+
+	return inputs, labels
 
 print(get_data('/home/awei6/course/cohn-kanade-images/', '/home/awei6/course/Emotion'))
