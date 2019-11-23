@@ -115,7 +115,16 @@ def get_data(images_path, labels_path):
 	# 	print(labels[i])
 	# 	print(checker[i])
 	# 	print('\n\n\n')
+	inputs = np.asarray(inputs)
+	labels = np.asarray(labels)
 
+	np.save('inputs.npy', inputs)
+	np.save('labels.npy', labels)
 	return inputs, labels
 
 get_data('./cohn-kanade-images/', './Emotion')
+
+def load_data(image_path, label_path):
+	inputs = np.load(image_path)
+	labels = np.load(label_path)
+	return inputs, labels
