@@ -1,11 +1,12 @@
 from __future__ import absolute_import
-from preprocess import get_data
+from preprocess import get_data, load_data
 import math
 import os
 import tensorflow as tf
 import numpy as np
 import random
-from sklearn.model_selection import KFold
+
+# from sklearn.model_selection import KFold
 
 
 class Model(tf.keras.Model):
@@ -22,7 +23,7 @@ class Model(tf.keras.Model):
 		self.batch_size = 64
 		self.num_classes = 7
 		self.epochs = 10
-		self.num_folds = ???
+		self.num_folds = 10
 		self.epsilon = .001
 		self.learning_rate = .001
 		self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
@@ -42,9 +43,9 @@ class Model(tf.keras.Model):
 
 		#Dense layers
 		self.dense1 = tf.keras.layers.Dense(64, activation='relu')
-		self.dropout1 = keras.layers.Dropout(rate=.3, noise_shape=None, seed=None)
+		self.dropout1 = tf.keras.layers.Dropout(rate=.3, noise_shape=None, seed=None)
 		self.dense2 = tf.keras.layers.Dense(64, activation='relu')
-		self.dropout2 = keras.layers.Dropout(rate=.3, noise_shape=None, seed=None)
+		self.dropout2 = tf.keras.layers.Dropout(rate=.3, noise_shape=None, seed=None)
 		self.dense3 = tf.keras.layers.Dense(self.num_classes, activation='softmax')
 
 	def call(self, inputs):
@@ -54,8 +55,8 @@ class Model(tf.keras.Model):
 		:param is_testing: a boolean that should be set to True only when you're doing Part 2 of the assignment and this function is being called during testing
 		:return: logits - a matrix of shape (num_inputs, num_classes); during training, it would be (batch_size, 2)
 		"""
-		
-		num_inputs = np.shape(inputs)[0]
+
+		num_inputs = tf.shape(inputs)[0]
 
 		stride2 = [1, 2, 2, 1]
 		stride1 = [1, 1, 1, 1]
@@ -66,11 +67,11 @@ class Model(tf.keras.Model):
 		# Batch Normalization 1
 		mean, variance = tf.nn.moments(conv1, [0, 1, 2])
 		batch1 = tf.nn.batch_normalization(conv1, mean, variance, None, None, self.epsilon)
-		# ReLU Nonlinearlity 1 
+		# ReLU Nonlinearlity 1
 		relu1 = tf.nn.relu(batch1)
 		# Max Pooling 1
 		pool1 = tf.nn.max_pool(relu1, ksize=[1, 3, 3, 1], strides=stride2, padding="SAME")
-		
+
 		# Convolution Layer 2
 		conv2 = tf.nn.conv2d(pool1, filters=self.filter2, strides=stride1, padding="SAME")
 		conv2 = tf.nn.bias_add(conv2, self.fb2)
@@ -81,7 +82,7 @@ class Model(tf.keras.Model):
 		relu2 = tf.nn.relu(batch2)
 		# Max Pooling 2
 		pool2 = tf.nn.max_pool(relu2, ksize=[1, 2, 2, 1], strides=stride2, padding="SAME")
-		
+
 		# Convolution Layer 3
 		conv3 = tf.nn.conv2d(pool2, filters=self.filter3, strides=stride1, padding="SAME")
 		conv3 = tf.nn.bias_add(conv3, self.fb3)
@@ -102,7 +103,7 @@ class Model(tf.keras.Model):
 		d2 = dropout2(d2)
 		# Dense Layer 3
 		logits = dense3(d2)
-		
+
 		return logits
 
 	def loss(self, logits, labels):
@@ -151,9 +152,9 @@ def train(model, train_inputs, train_labels):
 	train_label = tf.gather(train_labels, indices)
 
 
-	for i in range(int(math.floor(len(train_input)/model.batch_size))):
-
-		tf.image.random_flip_left_right(train_input[i*model.batch_size:i * model.batch_size + model.batch_size])
+	for i in range(len(train_input)//model.batch_size):
+		input = train_input[i*model.batch_size:i * model.batch_size + model.batch_size]
+		tf.image.random_flip_left_right(input)
 		label = train_label[i*model.batch_size:i * model.batch_size + model.batch_size]
 		with tf.GradientTape() as tape:
 			logits = model.call(input)
@@ -183,50 +184,50 @@ def test(model, test_inputs, test_labels):
 
 def main():
 
-	inputs, labels = get_data('/Data PATH')
-    group_num = 10
-    group_size = len(inputs) // group_num
-    acc = 0
-    for j in range(group_num):
+	inputs, labels = load_data('inputs.npy', 'labels.npy')
+	group_num = 10
+	group_size = len(inputs) // group_num
+	acc = 0
+	for j in range(group_num):
         # dont want to do this until it actually starts working...
-	# for cross validation
-        if j == 1:
-            break
-        print('test set is: {} out of {}'.format(j, group_num))
-    	model = Model()
-	# create train/test sets by excluding the current test set
-        if j == 0 or j == group_num -1:
-            if j == 0:
-                train_inputs = inputs[group_size * (j+1):]
-                train_labels = labels[group_size * (j+1):]
-            else:
-                train_inputs = inputs[:group_size * j]
-                train_labels = labels[:group_size * j]
-        else:
-            train_inputs = inputs[:group_size * j] + inputs[group_size * (j+1)]
-            train_labels = labels[:group_size * j] + labels[group_size * (j+1)]
+		# for cross validation
+		if j == 1:
+			break
+		print('test set is: {} out of {}'.format(j, group_num))
+		model = Model()
+		# create train/test sets by excluding the current test set
 
-        test_inputs = inputs[group_size * j: group_size * (j+1)]
-        test_labels = labels[group_size * j: group_size * (j+1)]
+		if j == 0:
+			train_inputs = inputs[group_size * (j+1):]
+			train_labels = labels[group_size * (j+1):]
+		elif j == group_num - 1:
+			train_inputs = inputs[:group_size * j]
+			train_labels = labels[:group_size * j]
+		else:
+			train_inputs = inputs[:group_size * j] + inputs[group_size * (j+1):]
+			train_labels = labels[:group_size * j] + labels[group_size * (j+1):]
 
-    	for i in range(model.epochs):
-    		print('epoch #{}'.format(i+1))
-    		train(model, train_inputs, train_labels)
-    		prob = model.call(train_inputs)
-    		acc = model.accuracy(prob, train_labels)
-    		print('train acc: {}'.format(acc))
-    		prob = model.call(test_inputs)
-    		acc = model.accuracy(prob, test_labels)
-    		print('test acc: {}'.format(acc))
-        curr_acc = test(model, test_inputs, test_labels)
-    	acc += curr_acc
-    	print('test group {} acc: {}'.format(j, curr_acc))
+		test_inputs = inputs[group_size * j: group_size * (j+1)]
+		test_labels = labels[group_size * j: group_size * (j+1)]
+		print(train_inputs.shape)
+		for i in range(model.epochs):
+			print('epoch #{}'.format(i+1))
+			train(model, train_inputs, train_labels)
+			prob = model.call(train_inputs)
+			acc = model.accuracy(prob, train_labels)
+			print('train acc: {}'.format(acc))
+			prob = model.call(test_inputs)
+			acc = model.accuracy(prob, test_labels)
+			print('test acc: {}'.format(acc))
+		curr_acc = test(model, test_inputs, test_labels)
+		acc += curr_acc
+		print('test group {} acc: {}'.format(j, curr_acc))
 	# acc = test(model, test_inputs, test_labels)
 	# print('accuracy of model: {}'.format(acc))
 
     # overall_acc = acc / float(group_num)
-    overall_acc = acc
-    print('overall acc: {}'.format(overall_acc))
+	overall_acc = acc
+	print('overall acc: {}'.format(overall_acc))
 
 	return
 
