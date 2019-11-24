@@ -6,7 +6,7 @@ import tensorflow as tf
 import numpy as np
 import random
 from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Reshape
-
+from sklearn.model_selection import train_test_split
 
 # from sklearn.model_selection import KFold
 
@@ -148,51 +148,65 @@ def test(model, test_inputs, test_labels):
 def main():
 
 	inputs, labels = load_data('inputs.npy', 'labels.npy')
-	group_num = 10
-	group_size = len(inputs) // group_num
-	acc = 0
-	for j in range(group_num):
-		# dont want to do this until it actually starts working...
-		# for cross validation
-		if j == 1:
-			break
-		print('test set is: {} out of {}'.format(j, group_num))
-		model = Model()
-		# create train/test sets by excluding the current test set
+	model = Model()
+	#need to convert images and labels to numpy array, normalize images, convert to float32
+	image = (np.asarray(inputs)/255.0).astype(np.float32)
+	labels = np.asarray(labels)
+	#train test split
+	X_train, X_test, y_train, y_test = train_test_split(image, labels, test_size=0.1, random_state=42)
+	#train for num_epochs
+	for i in range(0, model.epochs):
+		train(model, X_train, y_train)
+	#test
+	testAcc = test(model, X_test, y_test)
+	print("TESTING ACCURACY: ", testAcc)
 
-		if j == 0:
-			train_inputs = inputs[group_size * (j+1):]
-			train_labels = labels[group_size * (j+1):]
-		elif j == group_num - 1:
-			train_inputs = inputs[:group_size * j]
-			train_labels = labels[:group_size * j]
-		else:
-			train_inputs = inputs[:group_size * j] + inputs[group_size * (j+1):]
-			train_labels = labels[:group_size * j] + labels[group_size * (j+1):]
 
-		test_inputs = inputs[group_size * j: group_size * (j+1)]
-		test_labels = labels[group_size * j: group_size * (j+1)]
-		print(train_inputs.shape)
-		for i in range(model.epochs):
-			print('epoch #{}'.format(i+1))
-			train(model, train_inputs, train_labels)
-			prob = model.call(train_inputs)
-			acc = model.accuracy(prob, train_labels)
-			print('train acc: {}'.format(acc))
-			prob = model.call(test_inputs)
-			acc = model.accuracy(prob, test_labels)
-			print('test acc: {}'.format(acc))
-		curr_acc = test(model, test_inputs, test_labels)
-		acc += curr_acc
-		print('test group {} acc: {}'.format(j, curr_acc))
-	# acc = test(model, test_inputs, test_labels)
-	# print('accuracy of model: {}'.format(acc))
+	# group_num = 10
+	# group_size = len(inputs) // group_num
+	# acc = 0
+	# for j in range(group_num):
+	# 	# dont want to do this until it actually starts working...
+	# 	# for cross validation
+	# 	if j == 1:
+	# 		break
+	# 	print('test set is: {} out of {}'.format(j, group_num))
+	# 	model = Model()
+	# 	# create train/test sets by excluding the current test set
 
-	# overall_acc = acc / float(group_num)
-	overall_acc = acc
-	print('overall acc: {}'.format(overall_acc))
+	# 	if j == 0:
+	# 		train_inputs = inputs[group_size * (j+1):]
+	# 		train_labels = labels[group_size * (j+1):]
+	# 	elif j == group_num - 1:
+	# 		train_inputs = inputs[:group_size * j]
+	# 		train_labels = labels[:group_size * j]
+	# 	else:
+	# 		train_inputs = inputs[:group_size * j] + inputs[group_size * (j+1):]
+	# 		train_labels = labels[:group_size * j] + labels[group_size * (j+1):]
 
-	return
+	# 	test_inputs = inputs[group_size * j: group_size * (j+1)]
+	# 	test_labels = labels[group_size * j: group_size * (j+1)]
+	# 	print(train_inputs.shape)
+	# 	for i in range(model.epochs):
+	# 		print('epoch #{}'.format(i+1))
+	# 		train(model, train_inputs, train_labels)
+	# 		prob = model.call(train_inputs)
+	# 		acc = model.accuracy(prob, train_labels)
+	# 		print('train acc: {}'.format(acc))
+	# 		prob = model.call(test_inputs)
+	# 		acc = model.accuracy(prob, test_labels)
+	# 		print('test acc: {}'.format(acc))
+	# 	curr_acc = test(model, test_inputs, test_labels)
+	# 	acc += curr_acc
+	# 	print('test group {} acc: {}'.format(j, curr_acc))
+	# # acc = test(model, test_inputs, test_labels)
+	# # print('accuracy of model: {}'.format(acc))
+
+	# # overall_acc = acc / float(group_num)
+	# overall_acc = acc
+	# print('overall acc: {}'.format(overall_acc))
+
+	# return
 
 
 if __name__ == '__main__':
