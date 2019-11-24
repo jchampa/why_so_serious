@@ -87,21 +87,22 @@ def get_data(images_path, labels_path):
 	checker = []
 	for key in data_dictionary:
 		#this is if we only want to do first and most intense image in the folder
-		# k = intense_num[key]
-		# current_input = data_dictionary[key][k]['image']
-		# current_label = data_dictionary[key][k]['label']
-		# if label == None:
-		# 	continue
-		# inputs.append(current_input)
-		# labels.append(current_label)
-		for k in data_dictionary[key]:
+		k = intense_num[key]
+		current_input = data_dictionary[key][k]['image']
+		current_label = data_dictionary[key][k]['label']
+		if current_label == None:
+			continue
+		inputs.append(current_input)
+		labels.append(current_label)
+		print(len(inputs), len(labels))
+		# for k in data_dictionary[key]:
 
-			current_input = data_dictionary[key][k]['image']
-			current_label = data_dictionary[key][k]['label']
-			if current_label:
-				checker.append((key, k))
-				inputs.append(current_input)
-				labels.append(current_label)
+		# 	current_input = data_dictionary[key][k]['image']
+		# 	current_label = data_dictionary[key][k]['label']
+		# 	if current_label:
+		# 		checker.append((key, k))
+		# 		inputs.append(current_input)
+		# 		labels.append(current_label)
 
 		# if key != '' and len(data_dictionary[key]) == 2:
 		# 	current_input = data_dictionary[key][0]
@@ -115,16 +116,17 @@ def get_data(images_path, labels_path):
 	# 	print(labels[i])
 	# 	print(checker[i])
 	# 	print('\n\n\n')
+
 	inputs = np.asarray(inputs)
 	labels = np.asarray(labels)
 
-	np.save('inputs.npy', inputs)
-	np.save('labels.npy', labels)
+	np.save('inputs.npy', inputs, allow_pickle=True)
+	np.save('labels.npy', labels, allow_pickle=True)
 	return inputs, labels
 
 get_data('./cohn-kanade-images/', './Emotion')
 
 def load_data(image_path, label_path):
-	inputs = np.load(image_path)
-	labels = np.load(label_path)
+	inputs = np.load(image_path, allow_pickle=True)
+	labels = np.load(label_path, allow_pickle=True)
 	return inputs, labels
