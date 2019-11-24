@@ -7,7 +7,7 @@ import numpy as np
 import random
 
 # from sklearn.model_selection import KFold
-
+#OlD VERSION
 
 class Model(tf.keras.Model):
 	def __init__(self):
