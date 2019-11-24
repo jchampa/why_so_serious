@@ -83,7 +83,7 @@ class Model(tf.keras.Model):
 
 		:return: the accuracy of the model as a Tensor
 		"""
-		correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
+		correct_predictions = tf.equal(tf.argmax(logits, 1), labels)
 		return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
 
 def train(model, train_inputs, train_labels):
@@ -139,14 +139,12 @@ def test(model, test_inputs, test_labels):
 	:return: test accuracy - this can be the average accuracy across
 	all batches or the sum as long as you eventually divide it by batch_size
 	"""
-	test_inputs = test_inputs.reshape(len(test_inputs),640,480,1)
 	test_inputs = np.expand_dims(test_inputs, axis=3)
 	prob = model.call(test_inputs)
 	return model.accuracy(prob, test_labels)
 
 
 def main():
-
 	inputs, labels = load_data('inputs.npy', 'labels.npy')
 	model = Model()
 	#need to convert images and labels to numpy array, normalize images, convert to float32
@@ -158,6 +156,7 @@ def main():
 	for i in range(0, model.epochs):
 		train(model, X_train, y_train)
 	#test
+
 	testAcc = test(model, X_test, y_test)
 	print("TESTING ACCURACY: ", testAcc)
 
