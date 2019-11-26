@@ -124,9 +124,15 @@ def get_data(images_path, labels_path):
 	np.save('labels.npy', labels, allow_pickle=True)
 	return inputs, labels
 
-get_data('./cohn-kanade-images/', './Emotion')
 
 def load_data(image_path, label_path):
 	inputs = np.load(image_path, allow_pickle=True)
 	labels = np.load(label_path, allow_pickle=True)
 	return inputs, labels
+
+def main():
+	get_data('./cohn-kanade-images/', './Emotion')
+
+
+if __name__ == '__main__':
+	main()

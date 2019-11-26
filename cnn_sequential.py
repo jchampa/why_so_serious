@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from preprocess import get_data, load_data
+from preprocess import load_data
 import math
 import os
 import tensorflow as tf
@@ -25,29 +25,39 @@ class Model(tf.keras.Model):
 		self.batch_size = 64
 		self.num_classes = 7
 		self.epochs = 5
-		self.num_folds = 10
 		self.epsilon = .001
-		self.learning_rate = .001
+		self.learning_rate = .01
 		self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
 
 
 		self.model = tf.keras.Sequential()
 
-		#conv1
-		self.model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=(3,3), strides=(2,2), padding='SAME', activation='relu'))
+
+
+		#conv1, I read on a stack overflow that the best order is to do batch norm, relu, max pool but who knows if thats right
+		self.model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=(3,3), strides=(2,2), padding='SAME'))
+		self.model.add(tf.keras.layers.BatchNormalization(epsilon = self.epsilon))
+		self.model.add(tf.keras.layers.Activation('relu'))
+		self.model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+
 
 		#conv2
-		self.model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=(3,3), strides=(2,2), padding='SAME', activation='relu'))
+		self.model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=(3,3), strides=(2,2), padding='SAME'))
 		self.model.add(tf.keras.layers.BatchNormalization(epsilon = self.epsilon))
+		self.model.add(tf.keras.layers.Activation('relu'))
+		self.model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
 		#conv3
-		self.model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=(3,3), strides=(2,2), padding='SAME', activation='relu'))
+		self.model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=(3,3), strides=(2,2), padding='SAME'))
 		self.model.add(tf.keras.layers.BatchNormalization(epsilon = self.epsilon))
+		self.model.add(tf.keras.layers.Activation('relu'))
+		self.model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
 		self.model.add(tf.keras.layers.Flatten())
 
+		self.model.add(tf.keras.layers.Dense(units=100, activation='relu'))
 		self.model.add(tf.keras.layers.Dense(units=64, activation='relu'))
-		self.model.add(tf.keras.layers.Dense(units=64, activation='relu'))
+		self.model.add(tf.keras.layers.Dropout(0.25))
 		self.model.add(tf.keras.layers.Dense(units=self.num_classes, activation='softmax'))
 		
 
@@ -100,7 +110,6 @@ def train(model, train_inputs, train_labels):
 	:return: None
 	'''
 
-	optimizer = model.optimizer
 	#shuffle inputs
 	indices = range(0, len(train_labels))
 	tf.random.shuffle(indices)
@@ -115,12 +124,12 @@ def train(model, train_inputs, train_labels):
 		#need to make inputs 4 dimensional
 		tf.reshape(batchInputs, [model.batch_size, 640, 480, 1])
 		batchInputs = np.expand_dims(batchInputs, axis=3)
-		#randomly flip
-		tf.image.random_flip_left_right(batchInputs)
+		#randomly flip, this brings down accuracy from what I can tell altho accuracy can range from like 9%-27% so who knows
+		# tf.image.random_flip_left_right(batchInputs)
 		with tf.GradientTape() as tape:
 			logits = model.call(batchInputs)
 			batchLoss = model.loss(logits, labels)
-			print('Batch Loss: ', batchLoss)
+			print('Batch Loss {}: {}'.format(i, batchLoss))
 		gradients = tape.gradient(batchLoss, model.trainable_variables)
 		model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
@@ -153,7 +162,8 @@ def main():
 	#train test split
 	X_train, X_test, y_train, y_test = train_test_split(image, labels, test_size=0.1, random_state=42)
 	#train for num_epochs
-	for i in range(0, model.epochs):
+	for ep in range(0, model.epochs):
+		print('==========EPOCH {}=========='.format(ep+1))
 		train(model, X_train, y_train)
 	#test
 
@@ -161,51 +171,6 @@ def main():
 	print("TESTING ACCURACY: ", testAcc)
 
 
-	# group_num = 10
-	# group_size = len(inputs) // group_num
-	# acc = 0
-	# for j in range(group_num):
-	# 	# dont want to do this until it actually starts working...
-	# 	# for cross validation
-	# 	if j == 1:
-	# 		break
-	# 	print('test set is: {} out of {}'.format(j, group_num))
-	# 	model = Model()
-	# 	# create train/test sets by excluding the current test set
-
-	# 	if j == 0:
-	# 		train_inputs = inputs[group_size * (j+1):]
-	# 		train_labels = labels[group_size * (j+1):]
-	# 	elif j == group_num - 1:
-	# 		train_inputs = inputs[:group_size * j]
-	# 		train_labels = labels[:group_size * j]
-	# 	else:
-	# 		train_inputs = inputs[:group_size * j] + inputs[group_size * (j+1):]
-	# 		train_labels = labels[:group_size * j] + labels[group_size * (j+1):]
-
-	# 	test_inputs = inputs[group_size * j: group_size * (j+1)]
-	# 	test_labels = labels[group_size * j: group_size * (j+1)]
-	# 	print(train_inputs.shape)
-	# 	for i in range(model.epochs):
-	# 		print('epoch #{}'.format(i+1))
-	# 		train(model, train_inputs, train_labels)
-	# 		prob = model.call(train_inputs)
-	# 		acc = model.accuracy(prob, train_labels)
-	# 		print('train acc: {}'.format(acc))
-	# 		prob = model.call(test_inputs)
-	# 		acc = model.accuracy(prob, test_labels)
-	# 		print('test acc: {}'.format(acc))
-	# 	curr_acc = test(model, test_inputs, test_labels)
-	# 	acc += curr_acc
-	# 	print('test group {} acc: {}'.format(j, curr_acc))
-	# # acc = test(model, test_inputs, test_labels)
-	# # print('accuracy of model: {}'.format(acc))
-
-	# # overall_acc = acc / float(group_num)
-	# overall_acc = acc
-	# print('overall acc: {}'.format(overall_acc))
-
-	# return
 
 
 if __name__ == '__main__':
