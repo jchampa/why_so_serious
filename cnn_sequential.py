@@ -8,7 +8,7 @@ import random
 from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Reshape
 from sklearn.model_selection import train_test_split
 
-# from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold
 
 
 class Model(tf.keras.Model):
@@ -161,14 +161,26 @@ def main():
 	labels = np.asarray(labels)
 	#train test split
 	X_train, X_test, y_train, y_test = train_test_split(image, labels, test_size=0.1, random_state=42)
+
+
 	#train for num_epochs
 	for ep in range(0, model.epochs):
 		print('==========EPOCH {}=========='.format(ep+1))
-		train(model, X_train, y_train)
-	#test
+
+		kf = KFold(n_splits=5)
+		splitIDX = 1
+		for train_index, test_index in kf.split(X_train):
+			k_x_train, k_x_test = X_train[train_index], X_train[test_index]
+			k_y_train, k_y_test = y_train[train_index], y_train[test_index]
+			train(model, k_x_train, k_y_train)
+			k_test_acc = test(model, k_x_test, k_y_test)
+			print("*** FOLD {} test accuracy: {} ***".format(splitIDX, k_test_acc))
+			splitIDX+=1
+
+
 
 	testAcc = test(model, X_test, y_test)
-	print("TESTING ACCURACY: ", testAcc)
+	print("OVERALL TESTING ACCURACY: ", testAcc)
 
 
 
