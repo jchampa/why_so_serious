@@ -2,6 +2,8 @@ import os
 import imageio
 import numpy as np
 import cv2
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator,array_to_img, img_to_array, load_img
 def get_data(images_path, labels_path):
 	'''
 	Note that num images per subject varies.
@@ -27,17 +29,24 @@ def get_data(images_path, labels_path):
 
 
 			file_path = os.path.join(subdir, file)
-			# print(file_path)
-			# print(subdir)
 			key = subdir.replace(images_path, '')
-			# print(key)
 			num = int(file_path[-6:-4])
 			if key in intense_num:
 				if intense_num[key] < num:
 					intense_num[key] = num
 			else:
 				intense_num[key] = num
-			image = cv2.resize(cv2.imread(file_path, 0), (480, 640))
+			# image = cv2.resize(cv2.imread(file_path, 0), (480, 640))
+			images = []
+			image = img_to_array(load_img(file_path,color_mode="grayscale",target_size=(480,640),interpolation="nearest"))
+
+			augment_base = image.reshape((1,)+image.shape)
+			augment_images(augment_base,images,3)
+
+			images.append(np.reshape(image,(480,640)))
+
+			image = np.reshape(image,(480,640))
+			
 			if key not in data_dictionary:
 				data_dictionary[key] = {}
 			# if len(image.shape) == 3:
@@ -46,12 +55,11 @@ def get_data(images_path, labels_path):
 			# 	rgb.add(key)
 			#
 			# 	image = np.dot(image[...,:3], [0.299, 0.587, 0.114])
-			data_dictionary[key][num] = {'image': image, 'label': None}
+			data_dictionary[key][num] = {'image': images, 'label': None}
 			# data_dictionary[key] = [1]
 
 	# Read in numbers from labels.
-	print('rgbs: ')
-	print(rgb)
+
 
 	counter = 0
 	for subdir, dirs, files in os.walk(labels_path):
@@ -61,7 +69,6 @@ def get_data(images_path, labels_path):
 				continue
 
 			file_path = os.path.join(subdir, file)
-			# print(file_path)
 			num = int(file_path[-15:-12])
 			key = subdir.replace(labels_path, '')[1:] # remove first / to have same key as images
 			with open(file_path, 'r') as f:
@@ -76,25 +83,23 @@ def get_data(images_path, labels_path):
 
 	inputs = []
 	labels = []
-	# for key in data_dictionary:
-	# 	print(key)
-	# 	for k in data_dictionary[key]:
-	# 		print(k)
-	# 		print(data_dictionary[key][k]['image'].shape)
-	# 		print(data_dictionary[key][k]['label'])
-	# 	print('')
 	# Remove images and labels with no label.
 	checker = []
 	for key in data_dictionary:
 		#this is if we only want to do first and most intense image in the folder
 		k = intense_num[key]
-		current_input = data_dictionary[key][k]['image']
+		current_inputs = data_dictionary[key][k]['image']
+		print(len(current_inputs))
 		current_label = data_dictionary[key][k]['label']
 		if current_label == None:
 			continue
-		inputs.append(current_input)
-		labels.append(current_label)
-		print(len(inputs), len(labels))
+		for image in current_inputs:
+			inputs.append(image)
+			labels.append(current_label)
+		# inputs.append(current_input)
+		# labels.append(current_label)
+
+
 		# for k in data_dictionary[key]:
 
 		# 	current_input = data_dictionary[key][k]['image']
@@ -110,19 +115,30 @@ def get_data(images_path, labels_path):
 		# 	inputs.append(current_input)
 		# 	labels.append(current_label)
 
-	#just testing to make sure it works
-	# for i in range(len(inputs)):
-	# 	print(inputs[i])
-	# 	print(labels[i])
-	# 	print(checker[i])
-	# 	print('\n\n\n')
-
 	inputs = np.asarray(inputs)
 	labels = np.asarray(labels)
 
 	np.save('inputs.npy', inputs, allow_pickle=True)
 	np.save('labels.npy', labels, allow_pickle=True)
 	return inputs, labels
+
+def augment_images(start, images, augment_number):
+	datagen = ImageDataGenerator(
+        		rotation_range=40,
+        		width_shift_range=0.2,
+        		height_shift_range=0.2,
+        		shear_range=0.2,
+        		zoom_range=0.2,
+        		horizontal_flip=True,
+        		fill_mode='nearest')
+	count = 0
+
+	for batch in datagen.flow(start, batch_size=1,save_to_dir = None, save_prefix='cat', save_format='jpeg'):
+		images.append(np.reshape(batch,(480,640)))
+		count+=1
+		if count == augment_number:
+			break
+
 
 
 def load_data(image_path, label_path):
