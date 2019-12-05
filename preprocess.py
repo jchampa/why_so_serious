@@ -1,7 +1,7 @@
 import os
-import imageio
 import numpy as np
-import cv2
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator,array_to_img, img_to_array, load_img
 def get_data(images_path, labels_path):
 	'''
 	Note that num images per subject varies.
@@ -27,8 +27,6 @@ def get_data(images_path, labels_path):
 
 
 			file_path = os.path.join(subdir, file)
-			# print(file_path)
-			# print(subdir)
 			key = subdir.replace(images_path, '')
 			# print(key)
 			num = int(file_path[-6:-4])
@@ -37,15 +35,11 @@ def get_data(images_path, labels_path):
 					intense_num[key] = num
 			else:
 				intense_num[key] = num
-			image = cv2.resize(cv2.imread(file_path, 0), (480, 640))
+
 			if key not in data_dictionary:
 				data_dictionary[key] = {}
-			# if len(image.shape) == 3:
-			# 	#convert to greyscale
-			# 	#dont know if this is correct way to do it but...
-			# 	rgb.add(key)
-			#
-			# 	image = np.dot(image[...,:3], [0.299, 0.587, 0.114])
+
+			image = img_to_array(load_img(file_path,color_mode="grayscale",target_size=(480,640),interpolation="nearest"))
 			data_dictionary[key][num] = {'image': image, 'label': None}
 			# data_dictionary[key] = [1]
 
@@ -77,15 +71,7 @@ def get_data(images_path, labels_path):
 
 	inputs = []
 	labels = []
-	# for key in data_dictionary:
-	# 	print(key)
-	# 	for k in data_dictionary[key]:
-	# 		print(k)
-	# 		print(data_dictionary[key][k]['image'].shape)
-	# 		print(data_dictionary[key][k]['label'])
-	# 	print('')
-	# Remove images and labels with no label.
-	checker = []
+	
 	for key in data_dictionary:
 		#this is if we only want to do first and most intense image in the folder
 		for j in range(1, 5):
@@ -100,33 +86,12 @@ def get_data(images_path, labels_path):
 			inputs.append(current_input)
 			labels.append(current_label)
 			print(len(inputs), len(labels))
-		# for k in data_dictionary[key]:
-
-		# 	current_input = data_dictionary[key][k]['image']
-		# 	current_label = data_dictionary[key][k]['label']
-		# 	if current_label:
-		# 		checker.append((key, k))
-		# 		inputs.append(current_input)
-		# 		labels.append(current_label)
-
-		# if key != '' and len(data_dictionary[key]) == 2:
-		# 	current_input = data_dictionary[key][0]
-		# 	current_label = data_dictionary[key][1]
-		# 	inputs.append(current_input)
-		# 	labels.append(current_label)
-
-	#just testing to make sure it works
-	# for i in range(len(inputs)):
-	# 	print(inputs[i])
-	# 	print(labels[i])
-	# 	print(checker[i])
-	# 	print('\n\n\n')
-
+	
 	inputs = np.asarray(inputs)
 	labels = np.asarray(labels)
 
-	np.save('inputs.npy', inputs, allow_pickle=True)
-	np.save('labels.npy', labels, allow_pickle=True)
+	np.save('inputs2.npy', inputs, allow_pickle=True)
+	np.save('labels2.npy', labels, allow_pickle=True)
 	return inputs, labels
 
 
