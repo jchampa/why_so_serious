@@ -69,7 +69,8 @@ def get_data(images_path, labels_path):
 				label = float(f.read().rstrip('\n'))
 				if key in data_dictionary:
 					for k in data_dictionary[key]:
-						if k == 1:
+						#first two images have neutral label
+						if k == 1 or k == 2:
 							data_dictionary[key][k]['label'] = 0
 						else:
 							data_dictionary[key][k]['label'] = label
@@ -87,14 +88,18 @@ def get_data(images_path, labels_path):
 	checker = []
 	for key in data_dictionary:
 		#this is if we only want to do first and most intense image in the folder
-		k = intense_num[key]
-		current_input = data_dictionary[key][k]['image']
-		current_label = data_dictionary[key][k]['label']
-		if current_label == None:
-			continue
-		inputs.append(current_input)
-		labels.append(current_label)
-		print(len(inputs), len(labels))
+		for j in range(1, 5):
+			if j == 3:
+				k = intense_num[key]
+			if j == 4:
+				k = intense_num[key] - 1
+			current_input = data_dictionary[key][k]['image']
+			current_label = data_dictionary[key][k]['label']
+			if current_label == None:
+				continue
+			inputs.append(current_input)
+			labels.append(current_label)
+			print(len(inputs), len(labels))
 		# for k in data_dictionary[key]:
 
 		# 	current_input = data_dictionary[key][k]['image']
