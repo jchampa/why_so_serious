@@ -1,4 +1,6 @@
 cohn-kanade-images/
 inputs.npy
 labels.npy
+augmented_inputs.npy
+augmented_labels.npy
 Emotion/

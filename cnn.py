@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from preprocess import get_data, load_data
+from preprocess import get_data, load_data,augment_images
 import math
 import os
 import tensorflow as tf
@@ -183,8 +183,11 @@ def test(model, test_inputs, test_labels):
 
 
 def main():
+	unaugmented_inputs, unaugmented_labels = load_data('inputs.npy', 'labels.npy')
 
-	inputs, labels = load_data('inputs.npy', 'labels.npy')
+	augment_images(unaugmented_inputs,unaugmented_labels,1)
+	inputs,labels = load_data('augmented_inputs.npy','augmented_labels.npy')
+
 	group_num = 10
 	group_size = len(inputs) // group_num
 	acc = 0

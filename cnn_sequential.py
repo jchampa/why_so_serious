@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from preprocess import load_data
+from preprocess import load_data,augment_images
 import math
 import os
 import tensorflow as tf
@@ -154,7 +154,12 @@ def test(model, test_inputs, test_labels):
 
 
 def main():
-	inputs, labels = load_data('inputs.npy', 'labels.npy')
+	unaugmented_inputs, unaugmented_labels = load_data('inputs.npy', 'labels.npy')
+	# print(type(unaugmented_inputs))
+
+	augment_images(unaugmented_inputs,unaugmented_labels,1)
+	inputs,labels = load_data('augmented_inputs.npy','augmented_labels.npy')
+
 	model = Model()
 	#need to convert images and labels to numpy array, normalize images, convert to float32
 	image = (np.asarray(inputs)/255.0).astype(np.float32)

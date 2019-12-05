@@ -1,7 +1,6 @@
 import os
 import imageio
 import numpy as np
-import cv2
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator,array_to_img, img_to_array, load_img
 def get_data(images_path, labels_path):
@@ -37,13 +36,12 @@ def get_data(images_path, labels_path):
 			else:
 				intense_num[key] = num
 			# image = cv2.resize(cv2.imread(file_path, 0), (480, 640))
-			images = []
+			# images = []
 			image = img_to_array(load_img(file_path,color_mode="grayscale",target_size=(480,640),interpolation="nearest"))
 
-			augment_base = image.reshape((1,)+image.shape)
-			augment_images(augment_base,images,3)
+			# augment_images(augment_base,images,3)
 
-			images.append(np.reshape(image,(480,640)))
+			# images.append(np.reshape(image,(480,640)))
 
 			image = np.reshape(image,(480,640))
 			
@@ -55,7 +53,7 @@ def get_data(images_path, labels_path):
 			# 	rgb.add(key)
 			#
 			# 	image = np.dot(image[...,:3], [0.299, 0.587, 0.114])
-			data_dictionary[key][num] = {'image': images, 'label': None}
+			data_dictionary[key][num] = {'image': image, 'label': None}
 			# data_dictionary[key] = [1]
 
 	# Read in numbers from labels.
@@ -88,32 +86,12 @@ def get_data(images_path, labels_path):
 	for key in data_dictionary:
 		#this is if we only want to do first and most intense image in the folder
 		k = intense_num[key]
-		current_inputs = data_dictionary[key][k]['image']
-		print(len(current_inputs))
+		current_input = data_dictionary[key][k]['image']
 		current_label = data_dictionary[key][k]['label']
 		if current_label == None:
 			continue
-		for image in current_inputs:
-			inputs.append(image)
-			labels.append(current_label)
-		# inputs.append(current_input)
-		# labels.append(current_label)
-
-
-		# for k in data_dictionary[key]:
-
-		# 	current_input = data_dictionary[key][k]['image']
-		# 	current_label = data_dictionary[key][k]['label']
-		# 	if current_label:
-		# 		checker.append((key, k))
-		# 		inputs.append(current_input)
-		# 		labels.append(current_label)
-
-		# if key != '' and len(data_dictionary[key]) == 2:
-		# 	current_input = data_dictionary[key][0]
-		# 	current_label = data_dictionary[key][1]
-		# 	inputs.append(current_input)
-		# 	labels.append(current_label)
+		inputs.append(current_input)
+		labels.append(current_label)
 
 	inputs = np.asarray(inputs)
 	labels = np.asarray(labels)
@@ -122,7 +100,27 @@ def get_data(images_path, labels_path):
 	np.save('labels.npy', labels, allow_pickle=True)
 	return inputs, labels
 
-def augment_images(start, images, augment_number):
+
+def augment_images(images,labels,num_augments):
+	augmented_images = []
+	augmented_labels = []
+	for image,label in zip(images,labels):
+		augmented_images.append(image)
+		augmented_labels.append(label)
+
+		aug_image_array = image[...,np.newaxis]
+
+		augment_base = image.reshape((1,)+aug_image_array.shape)
+		augment(augment_base,label,augmented_images,augmented_labels,num_augments)
+	
+	augmented_images = np.asarray(augmented_images)
+	augmented_labels = np.asarray(augmented_labels)
+
+	np.save("augmented_inputs.npy",augmented_images,allow_pickle=True)
+	np.save("augmented_labels.npy",augmented_labels,allow_pickle=True)
+
+
+def augment(start, label, images, labels, augment_number):
 	datagen = ImageDataGenerator(
         		rotation_range=40,
         		width_shift_range=0.2,
@@ -134,7 +132,9 @@ def augment_images(start, images, augment_number):
 	count = 0
 
 	for batch in datagen.flow(start, batch_size=1,save_to_dir = None, save_prefix='cat', save_format='jpeg'):
-		images.append(np.reshape(batch,(480,640)))
+		new_image = batch[0,:,:,0]
+		images.append(new_image)
+		labels.append(label)
 		count+=1
 		if count == augment_number:
 			break
