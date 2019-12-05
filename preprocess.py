@@ -77,8 +77,10 @@ def get_data(images_path, labels_path):
 		for j in range(1, 5):
 			if j == 3:
 				k = intense_num[key]
-			if j == 4:
+			elif j == 4:
 				k = intense_num[key] - 1
+			else:
+				k = j
 			current_input = data_dictionary[key][k]['image']
 			current_label = data_dictionary[key][k]['label']
 			if current_label == None:
