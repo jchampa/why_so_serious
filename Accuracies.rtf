@@ -1,0 +1,959 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671
+{\fonttbl\f0\fmodern\fcharset0 CourierNewPSMT;\f1\fmodern\fcharset0 CourierNewPS-BoldMT;\f2\fnil\fcharset0 Menlo-Regular;
+\f3\fnil\fcharset0 Menlo-Bold;\f4\fnil\fcharset0 Menlo-Italic;}
+{\colortbl;\red255\green255\blue255;\red255\green255\blue255;\red127\green127\blue127;\red26\green26\blue26;
+\red17\green131\blue151;\red254\green247\blue231;\red7\green60\blue69;\red239\green132\blue29;\red252\green58\blue128;
+\red69\green30\blue255;\red22\green168\blue85;\red221\green43\blue6;}
+{\*\expandedcolortbl;;\cssrgb\c100000\c100000\c100000;\cssrgb\c57046\c57047\c57046;\cssrgb\c13333\c13333\c13333;
+\cssrgb\c0\c58431\c65882;\cssrgb\c99608\c97255\c92549;\cssrgb\c0\c30196\c34118;\cssrgb\c95686\c59216\c14510;\cssrgb\c100000\c34118\c57255;
+\cssrgb\c34510\c25882\c100000;\cssrgb\c0\c70196\c40784;\cssrgb\c90196\c25490\c0;}
+\margl1440\margr1440\vieww28600\viewh16580\viewkind0
+\deftab720
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26 \cf2 \cb3 \expnd0\expndtw0\kerning0
+These are the 
+\f1\b learning rates
+\f0\b0  I try: 
+\f1\b [.001, .002, .005, .01,  .015, .02, .025, .03, .05,  .06, .07, .08, .1]
+\f0\b0 \
+These are the 
+\f1\b batch sizes
+\f0\b0  I try: 
+\f1\b [20, 30, 40, 50, 60, 70, 80, 90]
+\f0\b0\fs72 \
+\cb4 ==================================================================\
+Dataset: For only taking first and last image in each folder, no image augmentation
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \
+
+\f0\b0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 Architecture\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f2\b0\fs24 \AppleTypeServices \cf5 \cb6 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 16\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 20\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 20\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Flatten()\
+\
+Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 100\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dropout\cf7 (\cf10 0.25\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f4\i\b0 \cf12 self
+\f2\i0 \cf7 .\cf8 num_classes\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'softmax'\cf7 )\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Top accuracies
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \
+Accuracy | Learning Rate | Batch Size\
+[0.21212122, 0.02, 20]\
+[0.21212122, 0.07, 20]\
+[0.21212122, 0.005, 50]\
+[0.21212122, 0.05, 50]\
+[0.21212122, 0.005, 95]\
+[0.21212122, 0.02, 95]\
+[0.21212122, 0.05, 95]\
+[0.18181819, 0.002, 20]\
+[0.18181819, 0.002, 35]\
+[0.18181819, 0.005, 35]\
+[0.18181819, 0.02, 35]\
+\
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+\
+Architecture, added Dense(64) and reduced Dropout\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f2\b0\fs24 \AppleTypeServices \cf5 \cb6 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 16\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 20\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 20\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Flatten()\
+\
+Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 100\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dropout\cf7 (\cf10 0.01\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f4\i\b0 \cf12 self
+\f2\i0 \cf7 .\cf8 num_classes\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'softmax'\cf7 )\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Top accuracies
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \
+Accuracy | Learning Rate | Batch Size\
+ [ 0.21212122  0.07       20.        ]\
+ [ 0.21212122  0.08       20.        ]\
+ [ 0.21212122  0.03       30.        ]\
+ [ 0.21212122  0.001      40.        ]\
+ [ 0.21212122  0.02       40.        ]\
+ [ 0.21212122  0.03       50.        ]\
+ [ 0.21212122  0.1        60.        ]\
+ [ 0.21212122  0.02       70.        ]\
+ [ 0.21212122  0.06       70.        ]\
+ [ 0.21212122  0.025      80.        ]\
+ [ 0.21212122  0.01       90.        ]\
+ [ 0.21212122  0.03       90.        ]\
+ [ 0.18181819  0.05       60.        ]\
+ [ 0.18181819  0.03       70.        ]\
+ [ 0.18181819  0.001      80.        ]\
+ [ 0.18181819  0.02       80.        ]\
+ [ 0.18181819  0.03       80.        ]\
+ [ 0.18181819  0.07       80.        ]\
+ [ 0.18181819  0.001      90.        ]\
+ [ 0.18181819  0.02       90.        ]\
+\
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+\
+Architecture, increased Dropout, increased all filter nums\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f2\b0\fs24 \AppleTypeServices \cf5 \cb6 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 20\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 40\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME\'92\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 30\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Flatten()\
+\
+Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 100\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dropout\cf7 (\cf10 0.25\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f4\i\b0 \cf12 self
+\f2\i0 \cf7 .\cf8 num_classes\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'softmax'\cf7 )\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Top accuracies
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \
+Accuracy | Learning Rate | Batch Size\
+\
+ [ 0.21212122  0.08       20.        ]\
+ [ 0.21212122  0.01       30.        ]\
+ [ 0.21212122  0.02       50.        ]\
+ [ 0.21212122  0.08       50.        ]\
+ [ 0.21212122  0.1        50.        ]\
+ [ 0.21212122  0.015      60.        ]\
+ [ 0.21212122  0.02       60.        ]\
+ [ 0.21212122  0.1        60.        ]\
+ [ 0.21212122  0.001      70.        ]\
+ [ 0.21212122  0.005      70.        ]\
+ [ 0.21212122  0.1        70.        ]\
+ [ 0.21212122  0.005      80.        ]\
+ [ 0.21212122  0.025      80.        ]\
+ [ 0.21212122  0.07       80.        ]\
+ [ 0.21212122  0.02       90.        ]\
+ [ 0.21212122  0.05       90.        ]\
+ [ 0.18181819  0.03       40.        ]\
+ [ 0.18181819  0.05       40.        ]\
+ [ 0.18181819  0.07       50.        ]\
+ [ 0.18181819  0.002      70.        ]\
+\
+\
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \
+\
+
+\fs72 \AppleTypeServices ===========================================\
+\
+Dataset: For only taking first and last image in each folder, then image augmentation (5)
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \
+
+\f0\b0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 Architecture\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f2\b0\fs24 \AppleTypeServices \cf5 \cb6 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 20\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 40\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME\'92\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 30\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Flatten()\
+\
+Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 100\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dropout\cf7 (\cf10 0.25\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f4\i\b0 \cf12 self
+\f2\i0 \cf7 .\cf8 num_classes\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'softmax'\cf7 )\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Top accuracies
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \
+Accuracy | Learning Rate | Batch Size\
+ [ 0.2284264   0.03       20.        ]\
+ [ 0.2284264   0.005      30.        ]\
+ [ 0.2284264   0.05       40.        ]\
+ [ 0.2284264   0.03       50.        ]\
+ [ 0.2284264   0.03       60.        ]\
+ [ 0.2284264   0.06       60.        ]\
+ [ 0.2284264   0.07       60.        ]\
+ [ 0.2284264   0.08       60.        ]\
+ [ 0.2284264   0.1        60.        ]\
+ [ 0.2284264   0.02       70.        ]\
+ [ 0.2284264   0.001      80.        ]\
+ [ 0.2284264   0.025      80.        ]\
+ [ 0.1928934   0.001      20.        ]\
+ [ 0.1928934   0.02       20.        ]\
+ [ 0.1928934   0.05       20.        ]\
+ [ 0.1928934   0.08       20.        ]\
+\
+\
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \
+
+\fs72 \AppleTypeServices ===========================================\
+\
+Dataset: For only taking first 2 and last 2 in each folder, no image augmentation
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \
+
+\f0\b0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 Architecture\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f2\b0\fs24 \AppleTypeServices \cf5 \cb6 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 20\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 40\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME\'92\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 30\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Flatten()\
+\
+Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 100\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dropout\cf7 (\cf10 0.25\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f4\i\b0 \cf12 self
+\f2\i0 \cf7 .\cf8 num_classes\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'softmax'\cf7 )\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Top accuracies
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \
+Accuracy | Learning Rate | Batch Size\
+ [ 0.47328246  0.015      20.        ]\
+ [ 0.47328246  0.03       20.        ]\
+ [ 0.47328246  0.07       20.        ]\
+ [ 0.47328246  0.02       30.        ]\
+ [ 0.47328246  0.07       30.        ]\
+ [ 0.47328246  0.005      40.        ]\
+ [ 0.47328246  0.025      50.        ]\
+ [ 0.47328246  0.03       50.        ]\
+ [ 0.47328246  0.1        50.        ]\
+ [ 0.47328246  0.02       60.        ]\
+ [ 0.47328246  0.05       70.        ]\
+ [ 0.47328246  0.07       70.        ]\
+ [ 0.47328246  0.07       80.        ]\
+ [ 0.47328246  0.1        80.        ]\
+ [ 0.09923664  0.08       60.        ]\
+ [ 0.09923664  0.03       80.        ]\
+ [ 0.09923664  0.06       80.        ]\
+ [ 0.09923664  0.08       80.        ]\
+ [ 0.09923664  0.01       90.        ]\
+ [ 0.09923664  0.015      90.        ]\
+ [ 0.09923664  0.1        90.        ]\
+\
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \
+\
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 Architecture, increased filter nums and kernel size\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f2\b0\fs24 \AppleTypeServices \cf5 \cb6 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 5\cf7 ,\cf10 5\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 128\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 5,5\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME\'92\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 256\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 5,5\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Flatten()\
+\
+Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 100\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dropout\cf7 (\cf10 0.25\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f4\i\b0 \cf12 self
+\f2\i0 \cf7 .\cf8 num_classes\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'softmax'\cf7 )\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Top accuracies\
+
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 Accuracy | Learning Rate | Batch Size\
+ [ \cb4 0.47328246  0.005      40.        ]\
+ [ 0.47328246  0.07       20.        ]\
+\'85running this on gcp took too long and wasn\'92t giving any better results so only did it for batch sizes 20-50\
+\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\fs72 \AppleTypeServices \cf2 \cb4 ==================================================================\
+\
+Dataset: For only taking first 3 and last 3 in each folder, no image augmentation
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \
+
+\f0\b0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cb4 \
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \cb4 Architecture\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f2\b0\fs24 \AppleTypeServices \cf5 \cb6 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 20\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 40\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME\'92\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Conv2D\cf7 (
+\f3\b \cf8 filters\cf9 =
+\f2\b0 \cf10 30\cf7 ,\cf8  
+\f3\b kernel_size\cf9 =
+\f2\b0 \cf7 (\cf10 3\cf7 ,\cf10 3\cf7 ),\cf8  
+\f3\b strides\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf10 2\cf7 ),\cf8  
+\f3\b padding\cf9 =
+\f2\b0 \cf11 'SAME'\cf7 )\
+\cf5 BatchNormalization\cf7 (
+\f3\b \cf8 epsilon
+\f2\b0  
+\f3\b \cf9 =
+\f2\b0 \cf8  
+\f4\i \cf12 self
+\f2\i0 \cf7 .\cf8 epsilon\cf7 )\
+\cf5 Activation\cf7 (\cf11 'relu'\cf7 ))\
+\cf5 MaxPooling2D\cf7 (
+\f3\b \cf8 pool_size\cf9 =
+\f2\b0 \cf7 (\cf10 2\cf7 ,\cf8  \cf10 2\cf7 )\
+\
+\cf5 Flatten()\
+\
+Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 100\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f2\b0 \cf10 64\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'relu'\cf7 )\
+\cf5 Dropout\cf7 (\cf10 0.25\cf7 )\
+\cf5 Dense\cf7 (
+\f3\b \cf8 units\cf9 =
+\f4\i\b0 \cf12 self
+\f2\i0 \cf7 .\cf8 num_classes\cf7 ,\cf8  
+\f3\b activation\cf9 =
+\f2\b0 \cf11 'softmax'\cf7 )\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb4 \
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \cf2 Top accuracies
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb4 \
+Accuracy | Learning Rate | Batch Size\
+ [ 0.49238577  0.015      30.        ]\
+ [ 0.49238577  0.002      40.        ]\
+ [ 0.49238577  0.01       40.        ]\
+ [ 0.49238577  0.08       50.        ]\
+ [ 0.49238577  0.025      60.        ]\
+ [ 0.49238577  0.06       60.        ]\
+ [ 0.49238577  0.1        70.        ]\
+ [ 0.49238577  0.015      80.        ]\
+ [ 0.14213198  0.06       80.        ]\
+ [ 0.14213198  0.002      90.        ]\
+ [ 0.14213198  0.005      90.        ]\
+ [ 0.14213198  0.01       90.        ]\
+ [ 0.14213198  0.02       90.        ]\
+ [ 0.14213198  0.06       90.        ]\
+\
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\
+\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\fs36 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 Seems that the previous setup gives the best results. Now will try to increase that by increasing the number of epochs.\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\fs26 \AppleTypeServices\AppleTypeServicesF65539 \cf2 \cb4 \
+Strangely, despite using the exact same architecture, learning rate, batch sizes, and number of epochs as before, when I repeat it, I get different results\
+\
+
+\f1\b \AppleTypeServices\AppleTypeServicesF65539 \cb4 Top accuracies
+\f0\b0 \AppleTypeServices\AppleTypeServicesF65539 \cb4 \
+Accuracy | Learning Rate | Batch Size | Epoch num\
+ [ 0.04568528  0.06       80.          8.        ]\
+ [ 0.04568528  0.1        70.          9.        ]\
+ [ 0.04568528  0.06       80.          9.        ]\
+ [ 0.04568528  0.02       90.         10.        ]\
+ [ 0.07614213  0.1        70.          6.        ]\
+ [ 0.07614213  0.015      80.          6.        ]\
+ [ 0.07614213  0.025      60.          7.        ]\
+ [ 0.07614213  0.06       60.          8.        ]\
+ [ 0.07614213  0.06       90.          8.        ]\
+ [ 0.07614213  0.005      90.          9.        ]\
+ [ 0.07614213  0.06       90.          9.        ]\
+ [ 0.07614213  0.1        70.         10.        ]\
+ [ 0.0964467   0.01       90.          5.        ]\
+ [ 0.0964467   0.06       60.          6.        ]\
+ [ 0.0964467   0.08       50.          8.        ]\
+ [ 0.0964467   0.025      60.          8.        ]\
+ [ 0.0964467   0.01       90.          8.        ]\
+ [ 0.0964467   0.015      80.          9.        ]\
+ [ 0.0964467   0.01       90.          9.        ]\
+ [ 0.0964467   0.015      30.         10.        ]\
+ [ 0.0964467   0.01       40.         10.        ]\
+ [ 0.0964467   0.06       60.         10.        ]\
+ [ 0.0964467   0.015      30.         10.        ]\
+ [ 0.0964467   0.01       40.         10.        ]\
+ [ 0.0964467   0.06       60.         10.        ]\
+ [ 0.0964467   0.015      80.         10.        ]\
+ [ 0.0964467   0.005      90.         10.        ]\
+ [ 0.14213198  0.025      60.          5.        ]\
+ [ 0.14213198  0.005      90.          5.        ]\
+ [ 0.14213198  0.025      60.          6.        ]\
+ [ 0.14213198  0.06       80.          6.        ]\
+ [ 0.14213198  0.002      90.          6.        ]\
+ [ 0.14213198  0.015      80.          7.        ]\
+ [ 0.14213198  0.002      90.          7.        ]\
+ [ 0.14213198  0.002      90.          8.        ]\
+ [ 0.14213198  0.08       50.          9.        ]\
+ [ 0.14213198  0.08       50.         10.        ]\
+ [ 0.14213198  0.06       80.         10.        ]\
+ [ 0.14213198  0.002      90.         10.        ]\
+ [ 0.14213198  0.01       90.         10.        ]\
+ [ 0.14213198  0.06       90.         10.        ]\
+ [ 0.49238577  0.1        70.          5.        ]\
+ [ 0.49238577  0.015      30.          6.        ]\
+ [ 0.49238577  0.1        70.          7.        ]\
+ [ 0.49238577  0.005      90.          7.        ]\
+ [ 0.49238577  0.01       90.          7.        ]\
+ [ 0.49238577  0.02       90.          7.        ]\
+ [ 0.49238577  0.06       90.          7.        ]\
+ [ 0.49238577  0.015      30.          8.        ]\
+ [ 0.49238577  0.01       40.          8.        ]\
+ [ 0.49238577  0.1        70.          8.        ]\
+ [ 0.49238577  0.005      90.          8.        ]\
+ [ 0.49238577  0.025      60.          9.        ]\
+ [ 0.49238577  0.002      90.          9.        ]\
+ [ 0.49238577  0.02       90.          9.        ]\
+ [ 0.49238577  0.002      40.         10.        ]\
+\
+
+\fs72 \AppleTypeServices \cb4 ==================================================================\
+}
