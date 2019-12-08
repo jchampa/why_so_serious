@@ -115,41 +115,41 @@ class RES_CNN(tf.keras.Model):
         # self.model.add(tf.keras.layers.Dense(units=64, activation='relu'))
         # self.model.add(tf.keras.layers.Dense(units=self.num_classes, activation='softmax'))
         self.model = build_res_cnn()
-        print(self.model.summary())
+#       # print(self.model.summary())
 
 
 
-        def call(self, inputs):
-            """
-            Runs a forward pass on an input batch of images.
-            :param inputs: images, shape of (num_inputs, 32, 32, 3); during training, the shape is (batch_size, 32, 32, 3)
-            :param is_testing: a boolean that should be set to True only when you're doing Part 2 of the assignment and this function is being called during testing
-            :return: logits - a matrix of shape (num_inputs, num_classes); during training, it would be (batch_size, 2)
-            """
-            return self.model(inputs)
+    def call(self, inputs):
+        """
+        Runs a forward pass on an input batch of images.
+        :param inputs: images, shape of (num_inputs, 32, 32, 3); during training, the shape is (batch_size, 32, 32, 3)
+        :param is_testing: a boolean that should be set to True only when you're doing Part 2 of the assignment and this function is being called during testing
+        :return: logits - a matrix of shape (num_inputs, num_classes); during training, it would be (batch_size, 2)
+        """
+        return self.model(inputs)
 
-        def loss(self, logits, labels):
-            """
-            Calculates the model cross-entropy loss after one forward pass.
-            :param logits: during training, a matrix of shape (batch_size, self.num_classes)
-            containing the result of multiple convolution and feed forward layers
-            Softmax is applied in this function.
-            :param labels: during training, matrix of shape (batch_size, self.num_classes) containing the train labels
-            :return: the loss of the model as a Tensor
-            """
-            return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels, logits))
+    def loss(self, logits, labels):
+        """
+        Calculates the model cross-entropy loss after one forward pass.
+        :param logits: during training, a matrix of shape (batch_size, self.num_classes)
+        containing the result of multiple convolution and feed forward layers
+        Softmax is applied in this function.
+        :param labels: during training, matrix of shape (batch_size, self.num_classes) containing the train labels
+        :return: the loss of the model as a Tensor
+        """
+        return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels, logits))
 
 
-        def accuracy(self, logits, labels):
-            """
-            Calculates the model's prediction accuracy by comparing
-            logits to correct labels
-            :param logits: a matrix of size (num_inputs, self.num_classes); during training, this will be (batch_size, self.num_classes)
-            containing the result of multiple convolution and feed forward layers
-            :param labels: matrix of size (num_labels, self.num_classes) containing the answers, during training, this will be (batch_size, self.num_classes)
-            :return: the accuracy of the model as a Tensor
-            """
-            correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
-            return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
+    def accuracy(self, logits, labels):
+        """
+        Calculates the model's prediction accuracy by comparing
+        logits to correct labels
+        :param logits: a matrix of size (num_inputs, self.num_classes); during training, this will be (batch_size, self.num_classes)
+        containing the result of multiple convolution and feed forward layers
+        :param labels: matrix of size (num_labels, self.num_classes) containing the answers, during training, this will be (batch_size, self.num_classes)
+        :return: the accuracy of the model as a Tensor
+        """
+        correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
+        return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
 
-model = RES_CNN()
+# model = RES_CNN()
