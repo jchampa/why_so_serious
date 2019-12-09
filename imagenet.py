@@ -14,12 +14,16 @@ from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 
 
 
-def buildImageNet(num_classes):
+def buildImageNet(num_classes, mobileBoolean):
 	weights = 'imagenet'
 	input_tensor = tf.keras.layers.Input(shape=(480,640,3))
 	img_shape = [480,640,3]
-	# base_model = ResNet50(weights=weights, input_tensor=input_tensor, include_top=False)
-	base_model = MobileNetV2(weights=weights, input_tensor=input_tensor, include_top=False, input_shape=img_shape)
+
+	if(mobileBoolean):
+		base_model = MobileNetV2(weights=weights, input_tensor=input_tensor, include_top=False, input_shape=img_shape)
+	else:
+		base_model = ResNet50(weights=weights, input_tensor=input_tensor, include_top=False, input_shape=img_shape)
+	
 
 	#Don't train established layers
 	for layer in base_model.layers:
@@ -48,8 +52,9 @@ def main():
 	
 	inputs, labels = load_data('rgbInputs3.npy', 'rgbLabels3.npy')
 
-	
-	model = buildImageNet(num_classes)
+	#Set to false to train with RESNET50
+	trainWithMobileNetV2 = True
+	model = buildImageNet(num_classes, trainWithMobileNetV2)
 
 	adam = tf.keras.optimizers.Adam(learning_rate=learnrate, beta_1=0.9, beta_2=0.999, amsgrad=False)
 	model.compile(loss='sparse_categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
