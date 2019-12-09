@@ -73,7 +73,7 @@ def get_data(images_path, labels_path):
 	
 	for key in data_dictionary:
 		#this is if we only want to do first and most intense image in the folder
-		for j in range(0, 5):
+		for j in range(1, 5):
 			if j == 3:
 				k = intense_num[key]
 			elif j == 4:
