@@ -14,7 +14,7 @@ from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 
 
 
-def buildImageNet(num_classes, mobileBoolean):
+def buildImageNet(num_classes, mobileBoolean, finetuneBoolean):
 	weights = 'imagenet'
 	input_tensor = tf.keras.layers.Input(shape=(480,640,3))
 	img_shape = [480,640,3]
@@ -25,9 +25,14 @@ def buildImageNet(num_classes, mobileBoolean):
 		base_model = ResNet50(weights=weights, input_tensor=input_tensor, include_top=False, input_shape=img_shape)
 	
 
-	#Don't train established layers
-	for layer in base_model.layers:
-		layer.trainable=False
+	if(finetuneBoolean):
+		#Don't train established layers, but finetune by training 5
+		for layer in base_model.layers[:-5]:
+			layer.trainable=False
+	else:
+		#Don't train ANY established layers
+		for layer in base_model.layers:
+			layer.trainable=False
 
 	 # Add final layers that we train
 	x = base_model.output
@@ -52,14 +57,35 @@ def main():
 	
 	inputs, labels = load_data('rgbInputs3.npy', 'rgbLabels3.npy')
 
+	#Further fix class imbalance
+	new_inputs = []
+	new_labels = []
+	for i in range(len(labels)):
+		if(labels[i]==0):
+			#randomly skip
+			randInt = random.randint(1,3)
+			if(randInt!=3):
+				continue
+		new_inputs.append(inputs[i])
+		new_labels.append(labels[i])
+	inputs = (np.asarray(new_inputs)/255.0).astype(np.float32)
+	labels = np.asarray(new_labels)
+
+
+
 	#Set to false to train with RESNET50
-	trainWithMobileNetV2 = True
-	model = buildImageNet(num_classes, trainWithMobileNetV2)
+	trainWithMobileNetV2 = False
+	#Set to True to train finetune and train last few layers of imagenet
+	finetuneSomeLayers = True
+	model = buildImageNet(num_classes, trainWithMobileNetV2, finetuneSomeLayers)
 
 	adam = tf.keras.optimizers.Adam(learning_rate=learnrate, beta_1=0.9, beta_2=0.999, amsgrad=False)
 	model.compile(loss='sparse_categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
 	
 	X_train, X_test, y_train, y_test = train_test_split(inputs, labels, test_size=0.1, random_state=42)
+	unique_elements, counts_elements = np.unique(y_train, return_counts=True)
+	print(unique_elements)
+	print(counts_elements)
 	model.fit(X_train, y_train,
 		epochs=5,
 		batch_size=batchsz)
