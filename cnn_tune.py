@@ -109,7 +109,8 @@ def train(model, train_inputs, train_labels):
 		labels = train_labels[i:i+model.batch_size]
 		labels = np.expand_dims(labels, axis=1)
 		tf.reshape(batchInputs, [model.batch_size, 640, 480, 1])
-		batchInputs = np.expand_dims(batchInputs, axis=3)
+		#batchInputs = np.expand_dims(batchInputs, axis=3)
+		#print(batchInputs.shape)
 		with tf.GradientTape() as tape:
 			logits = model.call(batchInputs)
 			batchLoss = model.loss(logits, labels)
@@ -128,7 +129,8 @@ def test(model, test_inputs, test_labels):
 	:return: test accuracy - this can be the average accuracy across
 	all batches or the sum as long as you eventually divide it by batch_size
 	"""
-	test_inputs = np.expand_dims(test_inputs, axis=3)
+	tf.reshape(test_inputs, [test_inputs.shape[0], 640, 480, 1])
+	# test_inputs = np.expand_dims(test_inputs, axis=3)
 	prob = model.call(test_inputs)
 	return model.accuracy(prob, test_labels)
 
@@ -137,7 +139,23 @@ def main():
 
 	#edit this list however you want
 	learnrateList = [.001, .002, .005, .01,  .015, .02, .025, .03, .05,  .06, .07, .08, .1]
-	inputs, labels = load_data('inputs.npy', 'labels.npy')
+	inputs, labels = load_data('inputs2.npy', 'labels2.npy')
+
+	new_inputs = []
+	new_labels = []
+	#fix class imbalance
+	for i in range(len(labels)):
+		if(labels[i]==0):
+			#randomly skip
+			randInt = random.randint(1,3)
+			if(randInt!=3):
+				continue
+		new_inputs.append(inputs[i])
+		new_labels.append(labels[i])
+	inputs = (np.asarray(new_inputs)/255.0).astype(np.float32)
+	labels = np.asarray(new_labels)
+
+
 	accList = []
 	#edit these sizes however you want
 	for batchsz in range(20, 100, 10):
