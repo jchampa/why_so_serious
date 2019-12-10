@@ -10,166 +10,86 @@ from sklearn.model_selection import train_test_split
 
 from sklearn.model_selection import KFold
 
-class Model(tf.keras.Model):
-    def __init__(self, seed=None):
-        """
-        This model class will contain the architecture for your CNN that
-        classifies images. Do not modify the constructor, as doing so
-        will break the autograder. We have left in variables in the constructor
-        for you to fill out, but you are welcome to change them if you'd like.
-        """
-        super(Model, self).__init__()
+def get_trained_model(seed=None):
+    model = tf.keras.Sequential()
 
-        # TODO: Initialize all hyperparameters
-        self.batch_size = 64
-        self.num_classes = 7
-        self.epochs = 5
-        self.epsilon = .001
-        self.learning_rate = .01
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
-        self.kernel_initializer_seed = seed
-
-        self.model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Conv2D(filters=64, kernel_size=(3,3), strides=(2,2),input_shape=[480, 640, 1], padding='SAME', kernel_initializer=tf.keras.initializers.glorot_uniform(seed=seed)))
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.Activation('relu'))
 
 
+	#conv2
+    model.add(tf.keras.layers.Conv2D(filters=128, kernel_size=(3,3), strides=(2,2), padding='SAME', kernel_initializer=tf.keras.initializers.glorot_uniform(seed=seed)))
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
-        #conv1, I read on a stack overflow that the best order is to do batch norm, relu, max pool but who knows if thats right
-        self.model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=(3,3), strides=(2,2), padding='SAME', kernel_initializer=tf.keras.initializers.glorot_uniform(seed=seed)))
-        self.model.add(tf.keras.layers.BatchNormalization(epsilon = self.epsilon))
-        self.model.add(tf.keras.layers.Activation('relu'))
-        self.model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+	#conv3
+    model.add(tf.keras.layers.Conv2D(filters=256, kernel_size=(3,3), strides=(2,2), padding='SAME', kernel_initializer=tf.keras.initializers.glorot_uniform(seed=seed)))
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.Activation('relu'))
 
+    model.add(tf.keras.layers.Flatten())
 
-        #conv2
-        self.model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=(3,3), strides=(2,2), padding='SAME', kernel_initializer=tf.keras.initializers.glorot_uniform(seed=seed)))
-        self.model.add(tf.keras.layers.BatchNormalization(epsilon = self.epsilon))
-        self.model.add(tf.keras.layers.Activation('relu'))
-        self.model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+    model.add(tf.keras.layers.Dense(units=256, activation='relu'))
+    model.add(tf.keras.layers.Dense(units=128, activation='relu'))
+    model.add(tf.keras.layers.Dropout(0.25))
+    model.add(tf.keras.layers.Dense(units=8, activation= 'softmax'))
 
-        #conv3
-        self.model.add(tf.keras.layers.Conv2D(filters=20, kernel_size=(3,3), strides=(2,2), padding='SAME', kernel_initializer=tf.keras.initializers.glorot_uniform(seed=seed)))
-        self.model.add(tf.keras.layers.BatchNormalization(epsilon = self.epsilon))
-        self.model.add(tf.keras.layers.Activation('relu'))
-        self.model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+    model.compile(loss='categorical_crossentropy',
+				  optimizer='adam',
+				  metrics=['accuracy'])
 
-        self.model.add(tf.keras.layers.Flatten())
+    X_train, X_test, y_train, y_test = get_data()
 
-        self.model.add(tf.keras.layers.Dense(units=100, activation='relu'))
-        self.model.add(tf.keras.layers.Dense(units=64, activation='relu'))
-        self.model.add(tf.keras.layers.Dropout(0.25))
-        self.model.add(tf.keras.layers.Dense(units=self.num_classes, activation='softmax'))
+    model.fit(X_train, y_train, batch_size=32, nb_epoch=100,
+	  verbose=1, validation_data=(X_test, y_test))
 
-
-
-    def call(self, inputs):
-        """
-        Runs a forward pass on an input batch of images.
-        :param inputs: images, shape of (num_inputs, 32, 32, 3); during training, the shape is (batch_size, 32, 32, 3)
-        :param is_testing: a boolean that should be set to True only when you're doing Part 2 of the assignment and this function is being called during testing
-        :return: logits - a matrix of shape (num_inputs, num_classes); during training, it would be (batch_size, 2)
-        """
-        return self.model(inputs)
-
-    def loss(self, logits, labels):
-        """
-        Calculates the model cross-entropy loss after one forward pass.
-        :param logits: during training, a matrix of shape (batch_size, self.num_classes)
-        containing the result of multiple convolution and feed forward layers
-        Softmax is applied in this function.
-        :param labels: during training, matrix of shape (batch_size, self.num_classes) containing the train labels
-        :return: the loss of the model as a Tensor
-        """
-        return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels, logits))
-
-
-    def accuracy(self, logits, labels):
-        """
-        Calculates the model's prediction accuracy by comparing
-        logits to correct labels
-        :param logits: a matrix of size (num_inputs, self.num_classes); during training, this will be (batch_size, self.num_classes)
-        containing the result of multiple convolution and feed forward layers
-        :param labels: matrix of size (num_labels, self.num_classes) containing the answers, during training, this will be (batch_size, self.num_classes)
-
-        :return: the accuracy of the model as a Tensor
-        """
-        correct_predictions = tf.equal(tf.argmax(logits, 1), labels)
-        return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
-
-def train(model, train_inputs, train_labels):
-    '''
-    Trains the model on all of the inputs and labels for one epoch. You should shuffle your inputs
-    and labels - ensure that they are shuffled in the same order using tf.gather.
-    To increase accuracy, you may want to use tf.image.random_flip_left_right on your
-    inputs before doing the forward pass. You should batch your inputs.
-    :param model: the initialized model to use for the forward pass and backward pass
-    :param train_inputs: train inputs (all inputs to use for training),
-    shape (num_inputs, width, height, num_channels)
-    :param train_labels: train labels (all labels to use for training),
-    shape (num_labels, num_classes)
-    :return: None
-    '''
-
-    #shuffle inputs
-    indices = range(0, len(train_labels))
-    tf.random.shuffle(indices)
-    train_inputs = tf.gather(train_inputs, indices)
-    train_labels = tf.gather(train_labels, indices)
-
-    for i in range(0, len(train_inputs)-model.batch_size, model.batch_size):
-        batchInputs = train_inputs[i:i+model.batch_size]
-        labels = train_labels[i:i+model.batch_size]
-        #add dimension so its (64,1)
-        labels = np.expand_dims(labels, axis=1)
-        #need to make inputs 4 dimensional
-        tf.reshape(batchInputs, [model.batch_size, 640, 480, 1])
-        # batchInputs = np.expand_dims(batchInputs, axis=3)
-        #randomly flip, this brings down accuracy from what I can tell altho accuracy can range from like 9%-27% so who knows
-        # tf.image.random_flip_left_right(batchInputs)
-        with tf.GradientTape() as tape:
-            logits = model.call(batchInputs)
-            batchLoss = model.loss(logits, labels)
-            # print('Batch Loss {}: {}'.format(i, batchLoss))
-        gradients = tape.gradient(batchLoss, model.trainable_variables)
-        model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-
-        # print("Training Accuracy: ", model.accuracy(logits, labels))
-
-def test(model, test_inputs, test_labels):
-    """
-    Tests the model on the test inputs and labels. You should NOT randomly
-    flip images or do any extra preprocessing.
-    :param test_inputs: test data (all images to be tested),
-    shape (num_inputs, width, height, num_channels)
-    :param test_labels: test labels (all corresponding labels),
-    shape (num_labels, num_classes)
-    :return: test accuracy - this can be the average accuracy across
-    all batches or the sum as long as you eventually divide it by batch_size
-    """
-    # test_inputs = np.expand_dims(test_inputs, axis=3)
-    prob = model.call(test_inputs)
-    return model.accuracy(prob, test_labels)
+    model.save('vanillaModel.' + str(seed))
+    score = model.evaluate(X_test, y_test, verbose=0)
+    print("***test accuracy: {} ***".format(score))
+    return model
 
 def get_data():
-    inputs, labels = load_data('inputs2.npy', 'labels2.npy')
-    image = (np.asarray(inputs)/255.0).astype(np.float32)
-    labels = np.asarray(labels)
-    X_train, X_test, y_train, y_test = train_test_split(image, labels, test_size=0.1, random_state=42)
-    return (X_train, X_test, y_train, y_test)
+    inputs = np.load('inputs3.npy', allow_pickle=True)
+    labels = np.load('labels3.npy', allow_pickle=True)
+    new_inputs = []
+    new_labels = []
+    for i in range(len(labels)):
+        if labels[i]==0:
+            randInt = random.randint(1,3)
+            if randInt!=3:
+                continue
+        new_inputs.append(inputs[i])
+        new_labels.append(labels[i])
+    
+    inputs = (np.asarray(new_inputs)/255.0).astype(np.float32)
+    labels = np.asarray(new_labels, dtype=np.uint8)
 
+    unique_elements, counts_elements = np.unique(labels, return_counts=True)
+
+    X_train, X_test, y_train, y_test = train_test_split(inputs, labels, test_size=0.1, random_state=42)
+    y_train =tf.keras.utils.to_categorical(y_train)
+    y_test =tf.keras.utils.to_categorical(y_test)
+
+    return X_train, X_test, y_train, y_test
+    
 def get_accuracies(X_train, X_test, y_train, y_test):
-    seeds = np.arange(10)
+    seeds = np.arange(7)
     models = []
     # ---------------------
     # Train
     for seed in seeds:
-        model = Model(seed=seed)
-        train(model, X_train, y_train)
+        # model = get_trained_model(seed=seed)
+        model = tf.keras.models.load_model('vanillaModel.' + str(seed))
         models.append(model)
     # ----------------------
     # Test
+    y_test = np.argmax(y_test, axis=1)
+    
     single_accuracies = []
     for j, model in enumerate(models):
-        probabilities = np.asarray(models[j].call(X_test))
+        probabilities = models[j].predict(X_test)
         predictions = np.argmax(probabilities, axis=1)
 
         # Get single model accuracy
@@ -196,7 +116,7 @@ def get_accuracies(X_train, X_test, y_train, y_test):
 
 def main():
     X_train, X_test, y_train, y_test = get_data()
-    for i in range(5):
+    for i in range(1):
         ensemble_accuracy, single_accuracies = get_accuracies(X_train, X_test, y_train, y_test)
         print('Ensemble:', ensemble_accuracy)
         print('Single Median:', np.median(single_accuracies), 'Single Average:', np.mean(single_accuracies))
