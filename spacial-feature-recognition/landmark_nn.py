@@ -26,28 +26,45 @@ def main():
 
     # images,labels,landmarks,one_hot_labels = np.load("../inputs3.npy"),np.load("../labels3.npy"),np.load("landmarks.npy"),np.load("one_hot_labels.npy")
     spacial_landmarks = np.load("landmark_spacial_info.npy")
+    # labels = np.load("../labels3.npy")
     labels = np.load("../labels3.npy")
 
+    new_landmarks = []
+    new_labels = []
+
+    for i in range(len(labels)):
+        if(labels[i]==0):
+            randInt = random.randint(1,3)
+            if(randInt!=3):
+                continue
+            
+        new_landmarks.append(spacial_landmarks[i].flatten())
+        new_labels.append(tf.keras.utils.to_categorical(labels[i],8))
+    
+    x_train, x_test, y_train, y_test = train_test_split(new_landmarks, new_labels, test_size=0.1, random_state=42)
+
+    x_train,x_test = np.asarray(x_train),np.asarray(x_test)
+    y_train,y_test = np.asarray(y_train),np.asarray(y_test)
+
+    print(x_train[0].shape)
+    print(y_train[0].shape)
+
+
     model = tf.keras.Sequential()
-    model.add(tf.keras.layers.Flatten(input_shape=[68,68]))
     model.add(tf.keras.layers.Dense(512, input_shape=(4624,)))
     model.add(tf.keras.layers.Dense(512))
     model.add(tf.keras.layers.Dense(512))
     model.add(tf.keras.layers.Dense(512))
     model.add(tf.keras.layers.Dense(512))
-    model.add(tf.keras.layers.Dense(8, activation='softmax'))
-
-    X_train, X_test, y_train, y_test = train_test_split(spacial_landmarks, labels, test_size=0.1, random_state=42)
-
-    unique_elements, counts_elements = np.unique(y_train, return_counts=True)
-    unique_elements, counts_elements = np.unique(y_test, return_counts=True)
-
-    opt = tf.keras.optimizers.SGD(lr=0.0001, decay=1e-6, momentum=0.9)
-
-    model.compile(loss='sparse_categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
-    model.fit(X_train, y_train, batch_size=32, nb_epoch=100,verbose=1, validation_data=(X_test, y_test))
+    model.add(tf.keras.layers.Dense(units=8, activation='softmax'))
     
-    score = model.evaluate(X_test, y_test, verbose=0)
+
+    model.compile(loss='categorical_crossentropy',
+				  optimizer='adam',
+				  metrics=['accuracy'])
+    model.fit(x_train, y_train, batch_size=32, nb_epoch=100,verbose=1, validation_data=(x_test, y_test))
+    
+    score = model.evaluate(x_test, y_test, verbose=0)
     print("***test accuracy: {} ***".format(score))
 
     

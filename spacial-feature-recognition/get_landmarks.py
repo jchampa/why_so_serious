@@ -2,6 +2,7 @@ import os
 import numpy as np
 import tensorflow as tf
 import time
+import math
 import dlib
 from tensorflow.keras.preprocessing.image import ImageDataGenerator,array_to_img, img_to_array, load_img,save_img
 
@@ -37,6 +38,10 @@ def get_landmarks(images, labels):
     
     # return landmarks,one_hot_labels
 
+def euclidean(a, b):
+    dist = math.sqrt(math.pow((b[0] - a[0]), 2) + math.pow((b[1] - a[1]), 2))
+    return dist 
+
 def calc_landmark_spacial(landmarks):
     landmark_spacials = []
     for landmark_group in landmarks:
@@ -44,7 +49,7 @@ def calc_landmark_spacial(landmarks):
         for landmark_1 in landmark_group:
             spacial_distances.append([])
             for landmark_2 in landmark_group:
-                spacial_distances[-1].append(np.linalg.norm(landmark_1-landmark_2))
+                spacial_distances[-1].append(euclidean(landmark_1,landmark_2))
         spacial_distances = np.asmatrix(spacial_distances)
         landmark_spacials.append(spacial_distances)
     
