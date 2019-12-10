@@ -1,6 +1,10 @@
 cohn-kanade-images/
 inputs.npy
 labels.npy
+inputs3.npy
+labels3.npy
 augmented_inputs.npy
 augmented_labels.npy
 Emotion/
+spacial-feature-recognition/landmarks.npy
+spacial-feature-recognition/one_hot_labels.npy
