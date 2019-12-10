@@ -12,6 +12,9 @@ from tensorflow.keras.applications.resnet50 import ResNet50
 
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 
+from tensorflow.keras.preprocessing.image import array_to_img, save_img
+
+
 
 
 def buildImageNet(num_classes, mobileBoolean, finetuneBoolean):
@@ -43,15 +46,16 @@ def buildImageNet(num_classes, mobileBoolean, finetuneBoolean):
 
 	 # This is the model we will train
 	model = Model(base_model.input, x)
+	print(model.summary())
 
 	return model
 
 def main():
 
 
-	num_classes = 7
-	learnrate = .01
-	batchsz = 128
+	num_classes = 8
+	batchsz = 32
+	numEpoch = 25
 
 	#Make sure to run convertGreyscaleInputsToRGB.py first to convert inputs to 3rd channel
 	
@@ -63,37 +67,61 @@ def main():
 	for i in range(len(labels)):
 		if(labels[i]==0):
 			#randomly skip
+			# continue
 			randInt = random.randint(1,3)
 			if(randInt!=3):
 				continue
 		new_inputs.append(inputs[i])
 		new_labels.append(labels[i])
 	inputs = (np.asarray(new_inputs)/255.0).astype(np.float32)
-	labels = np.asarray(new_labels)
+	labels = np.asarray(new_labels, dtype=np.uint8)
+
+
+
+	unique_elements, counts_elements = np.unique(labels, return_counts=True)
+	print("labels count")
+	print(unique_elements)
+	print(counts_elements)
 
 
 
 	#Set to false to train with RESNET50
-	trainWithMobileNetV2 = False
+	trainWithMobileNetV2 = True
 	#Set to True to train finetune and train last few layers of imagenet
-	finetuneSomeLayers = True
+	finetuneSomeLayers = False
 	model = buildImageNet(num_classes, trainWithMobileNetV2, finetuneSomeLayers)
+	print(model.summary())
 
-	adam = tf.keras.optimizers.Adam(learning_rate=learnrate, beta_1=0.9, beta_2=0.999, amsgrad=False)
-	model.compile(loss='sparse_categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
-	
+	model.compile(loss='categorical_crossentropy',
+				  optimizer='adam',
+				  metrics=['accuracy'])
+	#train test split
 	X_train, X_test, y_train, y_test = train_test_split(inputs, labels, test_size=0.1, random_state=42)
 	unique_elements, counts_elements = np.unique(y_train, return_counts=True)
+	print("Y Train counts")
 	print(unique_elements)
 	print(counts_elements)
-	model.fit(X_train, y_train,
-		epochs=5,
-		batch_size=batchsz)
-	score, evaluateAcc = model.evaluate(X_test, y_test, batch_size=128)
-	
 
-	print('+++++++++++++++++++++++++')
-	print("Test Accuracy: ", evaluateAcc)
+	unique_elements, counts_elements = np.unique(y_test, return_counts=True)
+	print("Y Test counts")
+	print(unique_elements)
+	print(counts_elements)
+
+
+
+	#Turn labels to categorical for loss function
+	y_train =tf.keras.utils.to_categorical(y_train)
+	y_test =tf.keras.utils.to_categorical(y_test)
+
+
+	model.fit(X_train, y_train, batch_size=batchsz, nb_epoch=numEpoch,
+	  verbose=1, validation_data=(X_test, y_test))
+
+	score = model.evaluate(X_test, y_test, verbose=0)
+	print("***test accuracy: {} ***".format(score))
+
+
+	
 
 	
 	
