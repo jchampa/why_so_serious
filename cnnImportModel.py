@@ -18,60 +18,20 @@ def main():
 	
 	new_model = tf.keras.models.load_model('vanillaModel.h5')
 
-	
-	file_path = 'ck.png'
+	file_path = 'smiley.jpg'
 	
 	img = load_img(file_path,color_mode="grayscale",target_size=(480,640),interpolation="nearest")
 	image = img_to_array(img)
 	image = image[np.newaxis, ...]
+	image = (np.asarray(image)/255.0).astype(np.float32)
+
+
 	prediction = new_model.predict(image)
-	print(prediction[0])
-	cleanPred = tf.argmax(prediction[0], axis=0)
+	print("probabilities: ", prediction[0])
+	pred = np.argmax(prediction[0])
+	print("class label: ", pred)
+	print("Emotion: ", labelDict[pred])
 
-	print(new_model(image))
-
-
-	# file_path = 'jp.jpg'
-	
-	# img = load_img(file_path,color_mode="grayscale",target_size=(480,640),interpolation="nearest")
-	# image = img_to_array(img)
-	# image = image[np.newaxis, ...]
-	# prediction = new_model.predict(image)
-	# print(prediction)
-	# cleanPred = tf.argmax(prediction[0], axis=0)
-
-	# file_path = 'happy.jpg'
-	
-	# img = load_img(file_path,color_mode="grayscale",target_size=(480,640),interpolation="nearest")
-	# image = img_to_array(img)
-	# image = image[np.newaxis, ...]
-	# prediction = new_model.predict(image)
-	# print(prediction)
-	# cleanPred = tf.argmax(prediction[0], axis=0)
-
-	# file_path = 'sad.jpg'
-	
-	# img = load_img(file_path,color_mode="grayscale",target_size=(480,640),interpolation="nearest")
-	# image = img_to_array(img)
-	# image = image[np.newaxis, ...]
-	# prediction = new_model.predict(image)
-	# print(prediction)
-	# cleanPred = tf.argmax(prediction[0], axis=0)
-
-
-
-
-	# print(cleanPred)
-	# for p in prediction:
-	# 	print(p)
-	# print(labelDict[cleanPred])
-
-
-	
-# def load_data(image_path, label_path):
-# 	inputs = np.load(image_path, allow_pickle=True)
-# 	labels = np.load(label_path, allow_pickle=True)
-	# return inputs, labels
 
 if __name__ == '__main__':
 	main()
