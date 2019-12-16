@@ -5,7 +5,7 @@ import numpy as np
 import random
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, BatchNormalization, Reshape, Input, ZeroPadding2D, Activation, MaxPooling2D, Add, AveragePooling2D
 from tensorflow.keras.models import Model, load_model
-
+#RESNET MODEL
 def identity(input, filter1, filter2, filter3):
 
     skip = input
